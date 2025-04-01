@@ -88,7 +88,7 @@ jobs:
           my_metadata=$(echo $metadata | jq '.files[],.stac."proj:epsg",.stac."proj:projjson".id.code,.metadata.IMAGE_STRUCTURE.LAYOUT,.metadata.IMAGE_STRUCTURE.COMPRESSION,.metadata.IMAGE_STRUCTURE.LERC_VERSION,.metadata.IMAGE_STRUCTURE.MAX_Z_ERROR,.metadata.IMAGE_STRUCTURE.JPEG_QUALITY,.bands[].type,.bands[].min,.bands[].minimum,.bands[].max,.bands[].maximum,.bands[].noDataValue' | tr '\n' ',' | sed 's/,$//' | sed 's/\/vsicurl\///')
           #echo $my_datadata
           echo "https://map.geo.admin.ch/#/map?bgLayer=ch.swisstopo.pixelkarte-grau&layers=COG%7C$url,$my_metadata" >> metadata.csv
-          echo "| https://map.geo.admin.ch/#/map?bgLayer=ch.swisstopo.pixelkarte-grau&layers=COG%7C$url,$my_metadata |" | sed 's/,/ | /g' | sed 's/\"//' >> metadata.md
+          echo "| https://map.geo.admin.ch/#/map?bgLayer=ch.swisstopo.pixelkarte-grau&layers=COG%7C$url,$my_metadata |" | sed 's/,/ | /g' | sed 's/\"//g' >> metadata.md
         done
         cat metadata.csv
 
