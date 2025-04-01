@@ -1,0 +1,93 @@
+on: 
+  push:
+    branches:
+      - main
+      - dispatch
+
+jobs:
+  extract_metadata:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgeotiff-dev libgdal-dev jq
+
+    - name: Extract metadata
+      run: |
+        urls="
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2007_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2008_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2009_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2010_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2011_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2012_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2013_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2014_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2015_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2016_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2017_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2018_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2019_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2020_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2021_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2022_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell/landesforstinventar-vegetationshoehenmodell_2023_stereo_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2017_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2018_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2019_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2020_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2021_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2022_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2023_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2024_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2007_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2008_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2009_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2010_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2011_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2012_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2013_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2014_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2015_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2016_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2017_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2018_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2019_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2020_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2021_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2022_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2023_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2017_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2018_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2019_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2020_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2021_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2022_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2023_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2024_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2017_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2018_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2019_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2020_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2021_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2022_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2023_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2024_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-waldmischungsgrad/landesforstinventar-waldmischungsgrad_2023_2056.tif  
+        "
+        for url in $urls; do
+          metadata=$(gdalinfo -json /vsicurl/$url)
+          my_metadata=$(echo $metadata | jq '.files[],.stac."proj:epsg",.stac."proj:projjson".id.code,.metadata.IMAGE_STRUCTURE.LAYOUT,.metadata.IMAGE_STRUCTURE.COMPRESSION,.metadata.IMAGE_STRUCTURE.LERC_VERSION,.metadata.IMAGE_STRUCTURE.MAX_Z_ERROR,.metadata.IMAGE_STRUCTURE.JPEG_QUALITY,.bands[].max,.bands[].maximum,.bands[].noDataValue | @csv')
+          echo "url,proj_epsg,proj_code,layout,compression,lerc_version,max_z_error,jpeg_quality,max,maximum,nodata" > "metadata.csv"
+          echo "$my_metadata" >> "metadata.csv"
+        done
+        cat metadata.csv
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: metadata.csv
+        path: metadata.csv
