@@ -44,6 +44,14 @@ jobs:
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2022_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2023_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_lidar/landesforstinventar-vegetationshoehenmodell_lidar_2024_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2017_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2018_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2019_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2020_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2021_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2022_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2023_2056.tif
+          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2024_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2007_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2008_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief/landesforstinventar-vegetationshoehenmodell_relief_2009_2056.tif
@@ -69,22 +77,14 @@ jobs:
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2022_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2023_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_relief_sentinel/landesforstinventar-vegetationshoehenmodell_relief_sentinel_2024_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2017_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2018_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2019_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2020_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2021_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2022_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2023_2056.tif
-          https://data.geo.admin.ch/ch.bafu.landesforstinventar-vegetationshoehenmodell_sentinel/landesforstinventar-vegetationshoehenmodell_sentinel_2024_2056.tif
           https://data.geo.admin.ch/ch.bafu.landesforstinventar-waldmischungsgrad/landesforstinventar-waldmischungsgrad_2023_2056.tif  
         "
         echo "url,proj_epsg,proj_code,layout,compression,lerc_version,max_z_error,jpeg_quality,datatype,min,minimum,max,maximum,nodata" > "metadata.csv"
         for url in $urls; do
           metadata=$(gdalinfo -json /vsicurl/$url)
-          echo $metadata
+          #echo $metadata
           my_metadata=$(echo $metadata | jq '.files[],.stac."proj:epsg",.stac."proj:projjson".id.code,.metadata.IMAGE_STRUCTURE.LAYOUT,.metadata.IMAGE_STRUCTURE.COMPRESSION,.metadata.IMAGE_STRUCTURE.LERC_VERSION,.metadata.IMAGE_STRUCTURE.MAX_Z_ERROR,.metadata.IMAGE_STRUCTURE.JPEG_QUALITY,.bands[].type,.bands[].min,.bands[].minimum,.bands[].max,.bands[].maximum,.bands[].noDataValue' | tr '\n' ',' | sed 's/,$//')
-          echo $my_datadata
+          #echo $my_datadata
           echo "$my_metadata" >> metadata.csv
         done
         cat metadata.csv
