@@ -83,7 +83,7 @@ jobs:
         for url in $urls; do
           metadata=$(gdalinfo -json /vsicurl/$url)
           echo $metadata
-          my_metadata=$(echo $metadata | jq '.files[],.stac."proj:epsg",.stac."proj:projjson".id.code,.metadata.IMAGE_STRUCTURE.LAYOUT,.metadata.IMAGE_STRUCTURE.COMPRESSION,.metadata.IMAGE_STRUCTURE.LERC_VERSION,.metadata.IMAGE_STRUCTURE.MAX_Z_ERROR,.metadata.IMAGE_STRUCTURE.JPEG_QUALITY,.bands[].max,.bands[].maximum,.bands[].noDataValue')
+          my_metadata=$(echo $metadata | jq '.files[],.stac."proj:epsg",.stac."proj:projjson".id.code,.metadata.IMAGE_STRUCTURE.LAYOUT,.metadata.IMAGE_STRUCTURE.COMPRESSION,.metadata.IMAGE_STRUCTURE.LERC_VERSION,.metadata.IMAGE_STRUCTURE.MAX_Z_ERROR,.metadata.IMAGE_STRUCTURE.JPEG_QUALITY,.bands[].max,.bands[].maximum,.bands[].noDataValue' | tr '\n' ',' | sed 's/,$//')
           echo $my_datadata
           echo "$my_metadata" >> metadata.csv
         done
