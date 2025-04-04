@@ -6,6 +6,7 @@ on:
 
 jobs:
   extract_metadata:
+    name: Extract metadata
     runs-on: ubuntu-latest
     steps:
     - name: Check out code
