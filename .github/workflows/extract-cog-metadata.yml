@@ -1,8 +1,10 @@
+name: extract-cog-metadata
+
 on: 
   push:
     branches:
       - main
-      - dispatch
+  workflow_dispatch: 
 
 jobs:
   extract_metadata:
